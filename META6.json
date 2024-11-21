@@ -1,0 +1,29 @@
+{
+  "auth": "zef:lizmat",
+  "authors": [
+    "Elizabeth Mattijsen"
+  ],
+  "build-depends": [
+  ],
+  "depends": [
+  ],
+  "description": "Handle interactive user commands",
+  "license": "Artistic-2.0",
+  "name": "Commands",
+  "perl": "6.d",
+  "provides": {
+    "Commands": "lib/Commands.rakumod"
+  },
+  "resources": [
+  ],
+  "source-url": "https://github.com/lizmat/Commands.git",
+  "tags": [
+    "CLI",
+    "USER",
+    "INTERACTIVE",
+    "REPL"
+  ],
+  "test-depends": [
+  ],
+  "version": "0.0.1"
+}
