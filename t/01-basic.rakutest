@@ -26,7 +26,8 @@ my $commands = Commands.new:
     help          => { .say for $*COMMANDS.primaries },
     ""            => { say "same" },
   ),
-  :$out, :$err, :$sys
+  commandifier => *.split(";").map(*.trim),
+  :$out, :$err, :$sys,
 ;
 
 sub check(Str:D $input, **@expected) is test-assertion {

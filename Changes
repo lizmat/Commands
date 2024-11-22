@@ -1,6 +1,9 @@
 Revision history for Commands
 
 {{$NEXT}}
+    - Default the :commandifier argument to "no commandifying"
+    - Also ensure that "next" is propagated to outer loop if multiple
+      commands are specified in a single call to "process"
 
 0.0.1  2024-11-22T14:23:31+01:00
     - Initial version

@@ -7,7 +7,7 @@ my role Commands is export {
     has $.err      is built(:bind);
     has $.sys      is built(:bind);
     has $.tokenizer    = *.words;
-    has $.commandifier = *.split(";").map(*.trim);
+    has $.commandifier = False;
     has int $!max-words;
 
     method TWEAK(:$commands!) {
@@ -48,17 +48,25 @@ my role Commands is export {
 
     # Process a line, possibly consisting of multiple commands
     method process(Commands:D: Str:D $line --> Nil) {
-        my $seen-last;
-        for $!commandifier($line) {
-            CONTROL {
-                # Remember if we've seen a "last"
-                $seen-last = True when CX::Last
+        if $!commandifier {
+            my $seen-next;
+            my $seen-last;
+            for $!commandifier($line) {
+                CONTROL {
+                    # Remember if we've seen a "last"
+                    $seen-next = True when CX::Next;
+                    $seen-last = True when CX::Last;
+                }
+                self!command($_);
             }
-            self!command($_);
-        }
 
-        # Propagate any "last" to outer loop
-        last if $seen-last;
+            # Propagate any "next" and "last" to outer loop
+            next if $seen-next;
+            last if $seen-last;
+        }
+        else {
+            self!command($line);
+        }
     }
 
     method !command($command --> Nil) {

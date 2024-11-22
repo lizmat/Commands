@@ -68,7 +68,7 @@ my $commands = Commands.new:
   :err => $*ERR,
   :sys => $.err,
   :tokenizer    => *.words,
-  :commandifier => *.split(";").map(*.trim),
+  :commandifier => *.split(";").map(*.trim),  # default: False
 ;
 ```
 
@@ -100,7 +100,7 @@ Optional. The `:tokenizer` named argument specifies how a user input line should
 
 ### :commandifier
 
-Optional. The `:commandifier` named argument specifies how a user input line should be separated into multiple commands. It should be specified with a `Callable`. It defaults to `*.split(";").map(*.trim)`.
+Optional. The `:commandifier` named argument specifies how a user input line should be separated into multiple commands. It should be specified with a `Callable`. It defaults to `False`, indicating that each line passed to "process" should always be seen as a single command.
 
 add-method
 ----------
@@ -186,7 +186,7 @@ Returns the `Callable` that was (implicitely) specified with the `:tokenizer` na
 commandifier
 ------------
 
-Returns the `Callable` that was (implicitely) specified with the `:commandifier` named argument at object instantiation.
+Returns what was (implicitely) specified with the `:commandifier` named argument at object instantiation.
 
 AUTHOR
 ======
