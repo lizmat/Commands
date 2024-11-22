@@ -1,6 +1,10 @@
 Revision history for Commands
 
 {{$NEXT}}
+
+0.0.2  2024-11-22T19:05:16+01:00
+    - The default for :out is now whatever $*OUT when calling .process
+    - The default for :err is now whatever $*ERR when calling .process
     - Default the :commandifier argument to "no commandifying"
     - Also ensure that "next" is propagated to outer loop if multiple
       commands are specified in a single call to "process"

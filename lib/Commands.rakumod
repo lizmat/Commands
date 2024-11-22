@@ -10,11 +10,8 @@ my role Commands is export {
     has $.commandifier = False;
     has int $!max-words;
 
+    # Put all the commands in the right place
     method TWEAK(:$commands!) {
-        $!out := $*OUT without $!out;
-        $!err := $*ERR without $!err;
-        $!sys := $!err without $!sys;
-
         for $commands<> {
             $_ ~~ Pair
               ?? self.add-command($_)
@@ -22,6 +19,12 @@ my role Commands is export {
         }
     }
 
+    # Make sure these return something sensible
+    method out() { $!out // $*OUT }
+    method err() { $!err // $*ERR }
+    method sys() { $!sys // $!err // $*ERR }
+
+    # Add a single command
     method add-command(Commands:D: Pair:D $_) {
         my %commands := %!commands;
         my $value    := .value but primary(True);
@@ -110,8 +113,8 @@ my role Commands is export {
         {
             my $*INPUT    := $command;
             my $*COMMANDS := self;
-            my $*OUT      := $!out;
-            my $*ERR      := $!err;
+            temp $*OUT = $!out // $*OUT;
+            temp $*ERR = $!err // $*ERR;
             try $target(@words);
             $!err.say(.message.chomp) with $!;
         }

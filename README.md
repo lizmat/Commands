@@ -64,9 +64,9 @@ my $commands = Commands.new:
     shout => { say .skip.uc ~ "!" },
     ...
   ),
-  :out => $*OUT,
-  :err => $*ERR,
-  :sys => $.err,
+  :out => $*OUT,  # default: $*OUT at moment of .process(...)
+  :err => $*ERR,  # default: $*ERR at moment of .process(...)
+  :sys => $.err,  # default: self.err at moment of .process(...)
   :tokenizer    => *.words,
   :commandifier => *.split(";").map(*.trim),  # default: False
 ;
@@ -84,11 +84,11 @@ Required. The `:default` named argument expects a single `Callable` to be execut
 
 ### :out
 
-Optional. The `:out` named argument specifies the value of `$*OUT` whenever a command is executed. It defaults to `$*OUT`.
+Optional. The `:out` named argument specifies the value of `$*OUT` whenever a command is executed. If not specified, or specified with an undefined value, will assume the value of $*OUT at command execution time.
 
 ### :err
 
-Optional. The `:err` named argument specifies the value of `$*ERR` whenever a command is executed. It defaults to `$*ERR`.
+Optional. The `:err` named argument specifies the value of `$*ERR` whenever a command is executed. If not specified, or specified with an undefined value, will assume the value of $*ERR at command execution time.
 
 ### :sys
 
