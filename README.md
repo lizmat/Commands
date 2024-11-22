@@ -92,7 +92,7 @@ Optional. The `:err` named argument specifies the value of `$*ERR` whenever a co
 
 ### :sys
 
-Optional. The `:sys` named argument specifies the output handle to be used for system messages. It defaults to the (implicit) value specified with `:err`.
+Optional. The `:sys` named argument specifies the output handle to be used for system messages, such as when a shortened command entered by the user turned out to be ambiguous. It defaults to the (implicit) value specified with `:err`.
 
 ### :tokenizer
 
@@ -135,7 +135,7 @@ It then sets the these dynamic variables:
 
   * $*ERR - the value (implicitely) specified with :err
 
-And then executes the associated action `Callable` with the `List` of tokens passed as the single argument.
+And then executes the associated action `Callable` with the `List` of tokens passed as the single argument. If the execution failed for any reason, the associated error message will be shown using the value (implicitely) specified with `:err` at instantiation.
 
 primaries
 ---------
@@ -166,27 +166,27 @@ The `default` method returns the `Callable` that was specified with the `:defaul
 out
 ---
 
-Returns the object that was (implicitely> specified with the `:out` named argument at object instantiation.
+Returns the object that was (implicitely) specified with the `:out` named argument at object instantiation.
 
 err
 ---
 
-Returns the object that was (implicitely> specified with the `:err` named argument at object instantiation.
+Returns the object that was (implicitely) specified with the `:err` named argument at object instantiation.
 
 sys
 ---
 
-Returns the object that was (implicitely> specified with the `:sys` named argument at object instantiation.
+Returns the object that was (implicitely) specified with the `:sys` named argument at object instantiation.
 
 tokenizer
 ---------
 
-Returns the `Callable` that was (implicitely> specified with the `:tokenizer` named argument at object instantiation.
+Returns the `Callable` that was (implicitely) specified with the `:tokenizer` named argument at object instantiation.
 
 commandifier
 ------------
 
-Returns the `Callable` that was (implicitely> specified with the `:commandifier` named argument at object instantiation.
+Returns the `Callable` that was (implicitely) specified with the `:commandifier` named argument at object instantiation.
 
 AUTHOR
 ======

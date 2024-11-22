@@ -119,8 +119,9 @@ whenever a command is executed.  It defaults to C<$*ERR>.
 =head3 :sys
 
 Optional.  The C<:sys> named argument specifies the output handle to be
-used for system messages.  It defaults to the (implicit) value specified
-with C<:err>.
+used for system messages, such as when a shortened command entered by
+the user turned out to be ambiguous.  It defaults to the (implicit) value
+specified with C<:err>.
 
 =head3 :tokenizer
 
@@ -173,7 +174,9 @@ It then sets the these dynamic variables:
 =item $*ERR - the value (implicitely) specified with :err
 
 And then executes the associated action C<Callable> with the C<List> of
-tokens passed as the single argument.
+tokens passed as the single argument.  If the execution failed for any
+reason, the associated error message will be shown using the value
+(implicitely) specified with C<:err> at instantiation.
 
 =head2 primaries
 
@@ -207,27 +210,27 @@ debugging issues only.
 
 =head2 out
 
-Returns the object that was (implicitely> specified with the C<:out>
+Returns the object that was (implicitely) specified with the C<:out>
 named argument at object instantiation.
 
 =head2 err
 
-Returns the object that was (implicitely> specified with the C<:err>
+Returns the object that was (implicitely) specified with the C<:err>
 named argument at object instantiation.
 
 =head2 sys
 
-Returns the object that was (implicitely> specified with the C<:sys>
+Returns the object that was (implicitely) specified with the C<:sys>
 named argument at object instantiation.
 
 =head2 tokenizer
 
-Returns the C<Callable> that was (implicitely> specified with the
+Returns the C<Callable> that was (implicitely) specified with the
 C<:tokenizer> named argument at object instantiation.
 
 =head2 commandifier
 
-Returns the C<Callable> that was (implicitely> specified with the
+Returns the C<Callable> that was (implicitely) specified with the
 C<:commandifier> named argument at object instantiation.
 
 =head1 AUTHOR

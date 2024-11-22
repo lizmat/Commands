@@ -1,6 +1,91 @@
 use Test;
 use Commands;
 
-pass "replace me";
+plan 23;
 
-done-testing;
+class Catcher {
+    has @!seen;
+
+    method print(*@parts --> True) { @!seen.push: @parts.Str.chomp }
+    method seen() { @!seen.splice }
+}
+
+my $out := Catcher.new;
+my $err := Catcher.new;
+my $sys := Catcher.new;
+
+my $commands = Commands.new:
+  default => { note "default: '$*INPUT'" },
+  commands => (
+    quit          => { say $*INPUT },
+    exit          => "quit",
+    "release all" => { say "all released" },
+    release       => { say "released $_.[1]" },
+    red           => { say "save" },
+    shout         => { say .skip.uc ~ "!" },
+    help          => { .say for $*COMMANDS.primaries },
+    ""            => { say "same" },
+  ),
+  :$out, :$err, :$sys
+;
+
+sub check(Str:D $input, **@expected) is test-assertion {
+
+    $commands.process($input);
+
+    subtest "command: '$input'" => {
+        plan 3;
+
+        my @out := @expected[0];
+        my @err := @expected[1] // [];
+        my @sys := @expected[2] // [];
+
+        is-deeply $out.seen, @out, "out";
+        is-deeply $err.seen, @err, "err";
+        is-deeply $sys.seen, @sys, "sys";
+    }
+}
+
+#- basic command tests ---------------------------------------------------------
+
+check "", ["same"];
+
+check "quit foo", ["quit foo"];
+check "quit",     ["quit"];
+check "qui",      ["qui"];
+check "qu",       ["qu"];
+check "q",        ["q"];
+
+check "exit foo", ["exit foo"];
+check "exit",     ["exit"];
+check "exi",      ["exi"];
+check "ex",       ["ex"];
+check "e",        ["e"];
+
+check "release   all", ["all released"];
+check "r  all",        ["all released"];
+
+check "release   42", ["released 42"];
+check "rel  42",      ["released 42"];
+
+check "red", ["save"];
+
+check "shout hello  there", ["HELLO THERE!"];
+check "s     hello  there", ["HELLO THERE!"];
+
+check "help", [
+  "", "exit", "help", "quit", "red", "release", "release all", "shout"
+];
+
+#- default handling ------------------------------------------------------------
+
+check Q|  foo  |,          [], ["default: 'foo'"];
+check Q|my $a = 666|,      [], [Q|default: 'my $a = 666'|];
+check Q|my $a = 666 ; $a|, [], [Q|default: 'my $a = 666'|, Q|default: '$a'|];
+
+#- error handling --------------------------------------------------------------
+
+check "r  foo  bar", [], [], [
+  "Ambigous command 'r  foo  bar', matches:", "  red", "  release"
+]
+# vim: expandtab shiftwidth=4

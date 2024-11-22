@@ -10,7 +10,7 @@ my role Commands is export {
     has $.commandifier = *.split(";").map(*.trim);
     has int $!max-words;
 
-    method TWEAK(:$commands) {
+    method TWEAK(:$commands!) {
         $!out := $*OUT without $!out;
         $!err := $*ERR without $!err;
         $!sys := $!err without $!sys;
@@ -54,14 +54,14 @@ my role Commands is export {
                 # Remember if we've seen a "last"
                 $seen-last = True when CX::Last
             }
-            self!command($_, $line);
+            self!command($_);
         }
 
         # Propagate any "last" to outer loop
         last if $seen-last;
     }
 
-    method !command($command, $line --> Nil) {
+    method !command($command --> Nil) {
         my %commands := %!commands;
 
         my $target;
@@ -98,41 +98,23 @@ my role Commands is export {
             }
         }
 
-        my $*COMMANDS := self;
         $target := $!default without $target;
-        try $target(@words);
-        say .message.chomp with $!;
+        {
+            my $*INPUT    := $command;
+            my $*COMMANDS := self;
+            my $*OUT      := $!out;
+            my $*ERR      := $!err;
+            try $target(@words);
+            $!err.say(.message.chomp) with $!;
+        }
     }
 
+    method commands(Commands:D:) {
+        %!commands.Map
+    }
     method primaries(Commands:D:) {
         %!commands.map({ .key if .value.?is-primary }).sort(*.fc)
     }
-}
-
-=finish
-
-my $commands = Commands.new:
-  default => { dd "default"; say .EVAL },
-  commands => (
-    quit => { dd "quit"; last },  # also allows "q", "qu", "qui"
-    exit => "quit",    # handle same as "quit"
-    "release all" => { say "all released" },
-    release => { say "released $_.[1]" },
-    red => { say "save" },
-    sleep => { sleep .[1] // 1 },
-    help => { .say for $*COMMANDS.primaries },
-    "" => { say "same" },
-  ),
-;
-
-dd $commands.commands;
-$commands.add-command( "scream" => { say .skip.uc ~ "!" } );
-
-$commands.process("scream hello");
-
-loop {
-    last without my $line = prompt("> ");
-    $commands.process($line);
 }
 
 # vim: expandtab shiftwidth=4
