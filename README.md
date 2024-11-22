@@ -70,59 +70,42 @@ my $commands = Commands.new:
   :tokenizer    => *.words,
   :commandifier => *.split(";").map(*.trim),
 ;
+```
 
-=head3 :commands
+### :commands
 
-Required.  The C<:commands> named argument expects a list of C<Pairs> of
-which the key determines the command, and the value determines the
-associated action to be performed.  The action to be performed can be an
-actual C<Callable>, or a string indicating the command the given key is
-an alias to.
+Required. The `:commands` named argument expects a list of `Pairs` of which the key determines the command, and the value determines the associated action to be performed. The action to be performed can be an actual `Callable`, or a string indicating the command the given key is an alias to.
 
-If a C<Callable> is specified, then it should expect a single positional
-argument: a C<List> of the "tokens" as entered by the user (which defaults
-to executing the C<.words> method on the input string).  Not specifying
-parameters on the C<Callable> is generally enough, especially if one is
-not interested in any additional arguments.
+If a `Callable` is specified, then it should expect a single positional argument: a `List` of the "tokens" as entered by the user (which defaults to executing the `.words` method on the input string). Not specifying parameters on the `Callable` is generally enough, especially if one is not interested in any additional arguments.
 
-=head3 :default
+### :default
 
-Required.  The C<:default> named argument expects a single C<Callable> to
-be executed if an input could not be interpreted to be any of the known
-commands.
+Required. The `:default` named argument expects a single `Callable` to be executed if an input could not be interpreted to be any of the known commands.
 
-=head3 :out
+### :out
 
-Optional.  The C<:out> named argument specifies the value of C<$*OUT>
-whenever a command is executed.  It defaults to C<$*OUT>.
+Optional. The `:out` named argument specifies the value of `$*OUT` whenever a command is executed. It defaults to `$*OUT`.
 
-=head3 :err
+### :err
 
-Optional.  The C<:err> named argument specifies the value of C<$*ERR>
-whenever a command is executed.  It defaults to C<$*ERR>.
+Optional. The `:err` named argument specifies the value of `$*ERR` whenever a command is executed. It defaults to `$*ERR`.
 
-=head3 :sys
+### :sys
 
-Optional.  The C<:sys> named argument specifies the output handle to be
-used for system messages.  It defaults to the (implicit) value specified
-with C<:err>.
+Optional. The `:sys` named argument specifies the output handle to be used for system messages. It defaults to the (implicit) value specified with `:err`.
 
-=head3 :tokenizer
+### :tokenizer
 
-Optional.  The C<:tokenizer> named argument specifies how a user input
-line should be parsed into tokens.  It should be specified with a C<Callable>.
-It defaults to C<*.words>.
+Optional. The `:tokenizer` named argument specifies how a user input line should be parsed into tokens. It should be specified with a `Callable`. It defaults to `*.words`.
 
-=head3 :commandifier
+### :commandifier
 
-Optional.  The C<:commandifier> named argument specifies how a user input
-line should be separated into multiple commands.  It should be specified
-with a C<Callable>.  It defaults to C<*.split(";").map(*.trim)>.
+Optional. The `:commandifier` named argument specifies how a user input line should be separated into multiple commands. It should be specified with a `Callable`. It defaults to `*.split(";").map(*.trim)`.
 
-=head2 add-method
+add-method
+----------
 
-=begin code :lang<raku>
-
+```raku
 $commands.add-command( "sleep" => { sleep .[1] // 1 } );
 ```
 

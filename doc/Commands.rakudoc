@@ -84,6 +84,8 @@ my $commands = Commands.new:
   :commandifier => *.split(";").map(*.trim),
 ;
 
+=end code
+
 =head3 :commands
 
 Required.  The C<:commands> named argument expects a list of C<Pairs> of
