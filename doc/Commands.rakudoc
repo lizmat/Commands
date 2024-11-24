@@ -140,7 +140,7 @@ line should be separated into multiple commands.  It should be specified
 with a C<Callable>.  It defaults to C<False>, indicating that each line
 passed to "process" should always be seen as a single command.
 
-=head2 add-method
+=head2 add-command
 
 =begin code :lang<raku>
 

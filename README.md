@@ -102,8 +102,8 @@ Optional. The `:tokenizer` named argument specifies how a user input line should
 
 Optional. The `:commandifier` named argument specifies how a user input line should be separated into multiple commands. It should be specified with a `Callable`. It defaults to `False`, indicating that each line passed to "process" should always be seen as a single command.
 
-add-method
-----------
+add-command
+-----------
 
 ```raku
 $commands.add-command( "sleep" => { sleep .[1] // 1 } );
