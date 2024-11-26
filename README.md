@@ -57,6 +57,7 @@ new
 ```raku
 # Set up commands
 my $commands = Commands.new:
+  catch    => True,
   default  => { say .EVAL },
   commands => (
     quit  => { last },  # also allows "q", "qu", "qui"
@@ -64,11 +65,11 @@ my $commands = Commands.new:
     shout => { say .skip.uc ~ "!" },
     ...
   ),
-  :out => $*OUT,  # default: $*OUT at moment of .process(...)
-  :err => $*ERR,  # default: $*ERR at moment of .process(...)
-  :sys => $.err,  # default: self.err at moment of .process(...)
-  :tokenizer    => *.words,
-  :commandifier => *.split(";").map(*.trim),  # default: False
+  out => $*OUT,  # default: $*OUT at moment of .process(...)
+  err => $*ERR,  # default: $*ERR at moment of .process(...)
+  sys => $.err,  # default: self.err at moment of .process(...)
+  tokenizer    => *.words,
+  commandifier => *.split(";").map(*.trim),  # default: False
 ;
 ```
 
@@ -81,6 +82,10 @@ If a `Callable` is specified, then it should expect a single positional argument
 ### :default
 
 Required. The `:default` named argument expects a single `Callable` to be executed if an input could not be interpreted to be any of the known commands.
+
+### :catch
+
+Optional. The `:catch` named argument indicates whether any exceptions should be caught, and have just their message shown. It defaults to `True`. If `False` was specified, any exception will terminate the program, and produce a stack trace.
 
 ### :out
 
@@ -162,6 +167,19 @@ default
 -------
 
 The `default` method returns the `Callable` that was specified with the `:default` named argument at object instantiation. It is intended for debugging issues only.
+
+catch
+-----
+
+```raku
+say $commands.catch;  # True
+
+$commands.catch = False;
+```
+
+The `catch` method returns a `Bool` to indicate whether processing of a command is secured by a `CATCH` mechanism. It can also be called as a left-value to allow changing of the catch state.
+
+Note that disabling the catch mechanism is usually done only in a debugging environment.
 
 out
 ---

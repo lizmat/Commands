@@ -6,6 +6,7 @@ my role Commands is export {
     has $.out      is built(:bind);
     has $.err      is built(:bind);
     has $.sys      is built(:bind);
+    has Bool $.catch is rw = True;
     has $.tokenizer    = *.words;
     has $.commandifier = False;
     has int $!max-words;
@@ -20,9 +21,9 @@ my role Commands is export {
     }
 
     # Make sure these return something sensible
-    method out() { $!out // $*OUT }
-    method err() { $!err // $*ERR }
-    method sys() { $!sys // $!err // $*ERR }
+    method out(Commands:D:) { $!out // $*OUT }
+    method err(Commands:D:) { $!err // $*ERR }
+    method sys(Commands:D:) { $!sys // $!err // $*ERR }
 
     # Add a single command
     method add-command(Commands:D: Pair:D $_) {
@@ -115,8 +116,13 @@ my role Commands is export {
             my $*COMMANDS := self;
             temp $*OUT = self.out;
             temp $*ERR = self.err;
-            try $target(@words);
-            $*ERR.say(.message.chomp) with $!;
+            if $!catch {
+                try $target(@words);
+                $*ERR.say(.message.chomp) with $!;
+            }
+            else {
+                $target(@words);
+            }
         }
     }
 

@@ -1,8 +1,12 @@
 Revision history for Commands
 
 {{$NEXT}}
+
+0.0.3  2024-11-26T21:45:39+01:00
     - Fix some error handling if err/out/sys were not explicitedly
       initialized
+    - Added support for conditional exception catching: .catch
+    - Various documentation tweaks
 
 0.0.2  2024-11-22T19:05:16+01:00
     - The default for :out is now whatever $*OUT when calling .process

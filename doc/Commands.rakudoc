@@ -70,6 +70,7 @@ The declarations of possible actions can be done at object instantion
 
 # Set up commands
 my $commands = Commands.new:
+  catch    => True,
   default  => { say .EVAL },
   commands => (
     quit  => { last },  # also allows "q", "qu", "qui"
@@ -77,11 +78,11 @@ my $commands = Commands.new:
     shout => { say .skip.uc ~ "!" },
     ...
   ),
-  :out => $*OUT,  # default: $*OUT at moment of .process(...)
-  :err => $*ERR,  # default: $*ERR at moment of .process(...)
-  :sys => $.err,  # default: self.err at moment of .process(...)
-  :tokenizer    => *.words,
-  :commandifier => *.split(";").map(*.trim),  # default: False
+  out => $*OUT,  # default: $*OUT at moment of .process(...)
+  err => $*ERR,  # default: $*ERR at moment of .process(...)
+  sys => $.err,  # default: self.err at moment of .process(...)
+  tokenizer    => *.words,
+  commandifier => *.split(";").map(*.trim),  # default: False
 ;
 
 =end code
@@ -105,6 +106,13 @@ not interested in any additional arguments.
 Required.  The C<:default> named argument expects a single C<Callable> to
 be executed if an input could not be interpreted to be any of the known
 commands.
+
+=head3 :catch
+
+Optional.  The C<:catch> named argument indicates whether any exceptions
+should be caught, and have just their message shown.  It defaults to
+C<True>.  If C<False> was specified, any exception will terminate the
+program, and produce a stack trace.
 
 =head3 :out
 
@@ -212,6 +220,23 @@ It is intended for debugging issues only.
 The C<default> method returns the C<Callable> that was specified with the
 C<:default> named argument at object instantiation.  It is intended for
 debugging issues only.
+
+=head2 catch
+
+=begin code :lang<raku>
+
+say $commands.catch;  # True
+
+$commands.catch = False;
+
+=end code
+
+The C<catch> method returns a C<Bool> to indicate whether processing of
+a command is secured by a C<CATCH> mechanism.  It can also be called
+as a left-value to allow changing of the catch state.
+
+Note that disabling the catch mechanism is usually done only in a
+debugging environment.
 
 =head2 out
 
