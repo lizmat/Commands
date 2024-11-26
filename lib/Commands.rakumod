@@ -91,8 +91,8 @@ my role Commands is export {
 
         # Got a collision
         if $target ~~ List {
-            $!sys.say("Ambigous command '$command', matches:");
-            $!sys.say("  $_") for $target.sort(*.fc);
+            self.sys.say("Ambigous command '$command', matches:");
+            self.sys.say("  $_") for $target.sort(*.fc);
             return;
         }
 
@@ -103,7 +103,7 @@ my role Commands is export {
                     $target := $next;
                 }
                 else {
-                    $!sys.say("Could not find destination for '$target'");
+                    self.sys.say("Could not find destination for '$target'");
                     return;
                 }
             }
@@ -113,10 +113,10 @@ my role Commands is export {
         {
             my $*INPUT    := $command;
             my $*COMMANDS := self;
-            temp $*OUT = $!out // $*OUT;
-            temp $*ERR = $!err // $*ERR;
+            temp $*OUT = self.out;
+            temp $*ERR = self.err;
             try $target(@words);
-            $!err.say(.message.chomp) with $!;
+            $*ERR.say(.message.chomp) with $!;
         }
     }
 
