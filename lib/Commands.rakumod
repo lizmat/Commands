@@ -1,11 +1,11 @@
-my role primary { has $.is-primary }
-
 my role Commands is export {
-    has %.commands is built(False);
-    has $.default  is required;
-    has $.out      is built(:bind);
-    has $.err      is built(:bind);
-    has $.sys      is built(:bind);
+    has %.commands  is built(False);
+    has @.primaries is built(False);
+    has %.aliases   is built(False);
+    has $.default   is required;
+    has $.out       is built(:bind);
+    has $.err       is built(:bind);
+    has $.sys       is built(:bind);
     has Bool $.catch is rw = True;
     has $.tokenizer    = *.words;
     has $.commandifier = False;
@@ -27,9 +27,11 @@ my role Commands is export {
 
     # Add a single command
     method add-command(Commands:D: Pair:D $_) {
-        my %commands := %!commands;
-        my $value    := .value but primary(True);
+        my %commands  := %!commands;
+        my @primaries := @!primaries;
+        my %aliases   := %!aliases;
 
+        my $value := .value;
         if .key.trim -> $command {
             my @words = $command.words;
             $!max-words max= @words.elems;
@@ -37,6 +39,10 @@ my role Commands is export {
             my $main     := @words.shift;
             my $rest     := @words ?? " @words.join(' ')" !! "";
             my $referrer := $main ~ $rest;
+            if %commands{$referrer}:!exists {
+                @primaries.push($referrer);
+                %aliases{$value}.push($referrer) if $value ~~ Str;
+            }
             %commands{$referrer} := $value;
 
             my int $i;
@@ -48,6 +54,27 @@ my role Commands is export {
         else {
             %commands.push("", $value);
         }
+    }
+
+    # Create a new Commands object for extended help texts
+    method extended-help-from-hash(
+      Commands:D: %explanations,
+      :$default = { say "No extended help available for: $_" },
+      :$handler = { say "More information about: $^key\n$^text" }
+    ) {
+        Commands.new(
+          default  => $default,
+          commands => @!primaries.map( -> $key {
+              if %explanations{$key} -> $text {
+                  my @additions;
+                  @additions.push: $key => { $handler($key, $text) }
+                  if %!aliases{$key} -> $alias {
+                      @additions.push: $alias => { $handler($alias, $text) }
+                  }
+                  @additions.Slip
+              }
+          }).List
+        )
     }
 
     # Process a line, possibly consisting of multiple commands
@@ -126,12 +153,9 @@ my role Commands is export {
         }
     }
 
-    method commands(Commands:D:) {
-        %!commands.Map
-    }
-    method primaries(Commands:D:) {
-        %!commands.map({ .key if .value.?is-primary }).sort(*.fc)
-    }
+    method commands( Commands:D:) { %!commands.Map         }
+    method primaries(Commands:D:) { @!primaries.sort(*.fc) }
+    method aliases(  Commands:D:) { %!aliases.Map          }
 }
 
 # vim: expandtab shiftwidth=4

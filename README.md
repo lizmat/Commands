@@ -158,6 +158,24 @@ my $commands = Commands.new:
 
 The `primaries` method returns a sorted list of primary commands (that is: commands that specified). It is intended to provide basic "help" support.
 
+aliases
+-------
+
+```raku
+my $commands = Commands.new:
+  default => { say .EVAL },
+  commands => (
+    quit => { last },
+    exit => "quit",
+    ...
+  ),
+;
+
+say "$_.key(): $_.value" for $commands.aliases;  # quit: exit
+```
+
+The `aliases` method returns a (potentionally empty) `Map` with as keys the commands that have aliases, and as values a `List` of commands that are aliases to the command of the key.
+
 commands
 --------
 
@@ -205,6 +223,72 @@ commandifier
 ------------
 
 Returns what was (implicitely) specified with the `:commandifier` named argument at object instantiation.
+
+CREATING EXTENDED HELP
+======================
+
+Creating a "help" command is easy. Handling more in-depth help requests can be more complicated, like "help frobnicate" to get more help about the "frobnicate" command. But since commands can be shortened, e.g. to "frob", users might be inclined to enter "help frob" to get help about the "frobnicate" command.
+
+The `extended-help-from-hash` instance method returns a new `Commands` object that can help with the "help frob" case, as well as the "help frobnicate" case.
+
+All one needs to do is set up a hash where a key should match one of the commands of a `Commands` instance, and the valuei is a text to be shown when in-depth help is requested.
+
+A simple case:
+
+```raku
+my constant %help =
+  quit  => "Quit the editor and save the history",
+  shout => "Say input in capitals with exclamation mark",
+;
+
+my $commands = Commands.new:
+  default => { note "default: '$*INPUT'" },
+  commands => (
+    quit  => { say $*INPUT },
+    exit  => "quit",
+    shout => { say .skip.uc ~ "!" },
+    help  => {
+        state $help = $*COMMANDS.extended-help-from-hash(%help);
+        if .skip.join(" ") -> $deeper {
+            $help.process($deeper)
+        }
+        else {
+            .say for $*COMMANDS.primaries;
+        }
+    },
+  )
+);
+
+loop {
+    last without my $line = prompt("> ");
+    $commands.process($line);
+}
+```
+
+    > help
+    exit
+    help
+    quit
+    shout
+    > help quit
+    More information about: quit
+    Quit the editor and save the history
+    > help sh
+    More information about: shout
+    Say input in capitals with exclamation mark
+    > h e
+    More information about: eit
+    Quit the editor and save the history
+
+To customize the handling further, it is possible to specify the following named arguments:
+
+### :default
+
+Specifies the `Callable` to be called if the in-depth help request could not be processed, with the same semantics as the <:default> named argument on `.new`.
+
+### :handler
+
+Specifies a `Callable` that will be called for an in-depth help request for which there is a help text. It is expected to receive two positional arguments: the full command name (e.g. "quit") and the associated text (e.g. "Quit the editor and save the history").
 
 AUTHOR
 ======

@@ -2,6 +2,11 @@ Revision history for Commands
 
 {{$NEXT}}
 
+0.0.4  2024-11-29T23:01:54+01:00
+    - Added support for "aliases" method
+    - Added support for "extended-help-from-hash" to make it easier
+      to provide extended help
+
 0.0.3  2024-11-26T21:45:39+01:00
     - Fix some error handling if err/out/sys were not explicitedly
       initialized

@@ -1,7 +1,7 @@
 use Test;
 use Commands;
 
-plan 23;
+plan 29;
 
 class Catcher {
     has @!seen;
@@ -14,6 +14,11 @@ my $out := Catcher.new;
 my $err := Catcher.new;
 my $sys := Catcher.new;
 
+my constant %help =
+  quit  => "quit the editor",
+  shout => "say input in capitals with exclamation mark",
+;
+
 my $commands = Commands.new:
   default => { note "default: '$*INPUT'" },
   commands => (
@@ -23,8 +28,17 @@ my $commands = Commands.new:
     release       => { say "released $_.[1]" },
     red           => { say "save" },
     shout         => { say .skip.uc ~ "!" },
-    help          => { .say for $*COMMANDS.primaries },
     ""            => { say "same" },
+
+    help          => {
+        state $help = $*COMMANDS.extended-help-from-hash(%help);
+        if .skip.join(" ") -> $deeper {
+            $help.process($deeper)
+        }
+        else {
+            .say for $*COMMANDS.primaries;
+        }
+    },
   ),
   commandifier => *.split(";").map(*.trim),
   :$out, :$err, :$sys,
@@ -46,6 +60,13 @@ sub check(Str:D $input, **@expected) is test-assertion {
         is-deeply $sys.seen, @sys, "sys";
     }
 }
+
+is-deeply $commands.primaries,
+  <<exit help quit red release "release all" shout>>,
+  'check primaries';
+is-deeply $commands.aliases,
+  (quit => [<exit>],).Map,
+  'check aliases';
 
 #- basic command tests ---------------------------------------------------------
 
@@ -74,8 +95,22 @@ check "red", ["save"];
 check "shout hello  there", ["HELLO THERE!"];
 check "s     hello  there", ["HELLO THERE!"];
 
+#- help ------------------------------------------------------------------------
+
 check "help", [
-  "", "exit", "help", "quit", "red", "release", "release all", "shout"
+  "exit", "help", "quit", "red", "release", "release all", "shout"
+];
+check "help q", [
+  "More information about: quit\n%help<quit>"
+];
+check "help exit", [
+  "More information about: exit\n%help<quit>"
+];
+check "help shout", [
+  "More information about: shout\n%help<shout>"
+];
+check "help foo bar", [
+  "No extended help available for: foo bar"
 ];
 
 #- default handling ------------------------------------------------------------
