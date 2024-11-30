@@ -231,7 +231,7 @@ Creating a "help" command is easy. Handling more in-depth help requests can be m
 
 The `extended-help-from-hash` instance method returns a new `Commands` object that can help with the "help frob" case, as well as the "help frobnicate" case.
 
-All one needs to do is set up a hash where a key should match one of the commands of a `Commands` instance, and the valuei is a text to be shown when in-depth help is requested.
+All one needs to do is set up a hash where a key should match one of the commands of a `Commands` instance, and the value is a text to be shown when in-depth help is requested.
 
 A simple case:
 
@@ -244,7 +244,7 @@ my constant %help =
 my $commands = Commands.new:
   default => { note "default: '$*INPUT'" },
   commands => (
-    quit  => { say $*INPUT },
+    quit  => { last },
     exit  => "quit",
     shout => { say .skip.uc ~ "!" },
     help  => {
@@ -277,7 +277,7 @@ loop {
     More information about: shout
     Say input in capitals with exclamation mark
     > h e
-    More information about: eit
+    More information about: exit
     Quit the editor and save the history
 
 To customize the handling further, it is possible to specify the following named arguments:
