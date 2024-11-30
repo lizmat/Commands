@@ -223,7 +223,7 @@ my $commands = Commands.new:
   ),
 ;
 
-say "$_.key(): $_.value" for $commands.aliases;  # quit: exit
+say "$_.key(): $_.value()" for $commands.aliases;  # quit: exit
 
 =end code
 

@@ -171,7 +171,7 @@ my $commands = Commands.new:
   ),
 ;
 
-say "$_.key(): $_.value" for $commands.aliases;  # quit: exit
+say "$_.key(): $_.value()" for $commands.aliases;  # quit: exit
 ```
 
 The `aliases` method returns a (potentionally empty) `Map` with as keys the commands that have aliases, and as values a `List` of commands that are aliases to the command of the key.
