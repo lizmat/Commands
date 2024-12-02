@@ -100,6 +100,29 @@ my role Commands is export {
         }
     }
 
+    # Resolve a given command to its final full name
+    method resolve-command(Str:D $command is copy) {
+        my %commands := %!commands;
+
+        loop {
+            if %commands{$command} -> $next {
+
+                # Found the final target
+                $next ~~ Callable
+                  ?? (return $command)
+                  # Got a collision
+                  !! $next ~~ List
+                    ?? (return Nil)
+                    !! ($command = $next);
+            }
+
+            # Huh?  Internal messup
+            else {
+                return Nil;
+            }
+        }
+    }
+
     method !command($command --> Nil) {
         my %commands := %!commands;
 

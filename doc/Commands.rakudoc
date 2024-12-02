@@ -161,6 +161,18 @@ command structure during the lifetime of the C<Commands> object.  It
 expects a C<Pair> argument, just as in the C<List> specified with the
 C<:commands> named argument at object instantion.
 
+=head2 resolve-command
+
+=begin code :lang<raku>
+
+say $commands.resolve-command("foo");
+
+=end code
+
+The C<resolve-command> method is a helper method that will either
+expand the given command, or return C<Nil> if it couldn't for whatever
+reason.
+
 =head2 process
 
 =begin code :lang<raku>

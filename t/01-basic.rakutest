@@ -1,7 +1,7 @@
 use Test;
 use Commands;
 
-plan 29;
+plan 36;
 
 class Catcher {
     has @!seen;
@@ -123,5 +123,16 @@ check Q|my $a = 666 ; $a|, [], [Q|default: 'my $a = 666'|, Q|default: '$a'|];
 
 check "r  foo  bar", [], [], [
   "Ambigous command 'r  foo  bar', matches:", "  red", "  release"
-]
+];
+
+#- resolving commands ----------------------------------------------------------
+
+for <s sh sho shou shout> {
+    is $commands.resolve-command($_), "shout", "'$_' resolved to 'shout'";
+}
+is-deeply $commands.resolve-command('re'), Nil,
+  "'re' did not resolve as it is ambiguous";
+is-deeply $commands.resolve-command('xxx'), Nil,
+  "'xxx' did not resolve as it is unknown";
+
 # vim: expandtab shiftwidth=4

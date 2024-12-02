@@ -2,6 +2,9 @@ Revision history for Commands
 
 {{$NEXT}}
 
+0.0.5  2024-12-02T21:39:52+01:00
+    - Added support for "resolve-command" method
+
 0.0.4  2024-11-29T23:01:54+01:00
     - Added support for "aliases" method
     - Added support for "extended-help-from-hash" to make it easier

@@ -116,6 +116,15 @@ $commands.add-command( "sleep" => { sleep .[1] // 1 } );
 
 The `add-command` method allows one to add a command to the existing command structure during the lifetime of the `Commands` object. It expects a `Pair` argument, just as in the `List` specified with the `:commands` named argument at object instantion.
 
+resolve-command
+---------------
+
+```raku
+say $commands.resolve-command("foo");
+```
+
+The `resolve-command` method is a helper method that will either expand the given command, or return `Nil` if it couldn't for whatever reason.
+
 process
 -------
 
