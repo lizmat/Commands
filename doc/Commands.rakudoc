@@ -16,12 +16,14 @@ my $commands = Commands.new:
   commands => (
     quit  => { last },  # also allows "q", "qu", "qui"
     exit  => "quit",    # handle same as "quit"
-    shout => { say .skip.uc ~ "!" },
     sleep => { sleep .[1] // 1 }
     ""    => { say "assume same" },
     "release all" => { say "all released" },
+    &shout,
   ),
 ;
+
+sub shout($_) { say .skip.uc ~ "!" }
 
 # Run a very simple REPL
 loop {
@@ -39,11 +41,15 @@ command interactions once (possibly at compile time) and the associated
 actions, and takes away the burden of figuring out all of the possible
 combinations of commands with possible shortcuts.
 
-The main declarations consist of a list of C<Pair>s where the key is
-the command, and the value is either e C<Callable>, or a string referring
-to an other command (allowing a simple way to define aliases).  The action
-to be performed if the user entered something that did not match any of the
-commands, can also be specified.
+The main declarations consist of the named argument C<"commands"> which
+is expected to contain a C<List> of values.  Each value can either be
+aC<Pair> where the key is the command, and the value is either a
+C<Callable>, or a string referring to an other command (allowing a
+simple way to define aliases).  Or can be a subroutine: in which case
+the name of the subroutine will be taken as the command name.
+
+The action to be performed if the user entered something that did not
+match any of the commands, can also be specified with C<"default">.
 
 =head2 Specifying a command
 
@@ -89,17 +95,19 @@ my $commands = Commands.new:
 
 =head3 :commands
 
-Required.  The C<:commands> named argument expects a list of C<Pairs> of
-which the key determines the command, and the value determines the
-associated action to be performed.  The action to be performed can be an
-actual C<Callable>, or a string indicating the command the given key is
-an alias to.
+Required.  The C<:commands> named argument expects a list.  Its values
+should either be a C<Pair> of which the key determines the command name,
+and the value determines the associated action to be performed.  The
+action to be performed can be an actual C<Callable>, or a string
+indicating the command the given key is an alias to.  Or it can be a
+subroutine: in which case the name of the subroutine will be taken as
+the command name.
 
 If a C<Callable> is specified, then it should expect a single positional
 argument: a C<List> of the "tokens" as entered by the user (which defaults
 to executing the C<.words> method on the input string).  Not specifying
-parameters on the C<Callable> is generally enough, especially if one is
-not interested in any additional arguments.
+parameters on a C<Block> is generally enough, especially if one is B<not>
+interested in any additional arguments.
 
 =head3 :default
 
@@ -154,11 +162,14 @@ passed to "process" should always be seen as a single command.
 
 $commands.add-command( "sleep" => { sleep .[1] // 1 } );
 
+sub frobnicate($_) { say "frobnicating: $_" }
+$commands.add-command(&frobnicate);  # add "frobnicate" command
+
 =end code
 
 The C<add-command> method allows one to add a command to the existing
 command structure during the lifetime of the C<Commands> object.  It
-expects a C<Pair> argument, just as in the C<List> specified with the
+expects an argument, just as in the C<List> specified with the
 C<:commands> named argument at object instantion.
 
 =head2 resolve-command
@@ -394,7 +405,7 @@ deal to me!
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright 2024 Elizabeth Mattijsen
+Copyright 2024, 2025 Elizabeth Mattijsen
 
 This library is free software; you can redistribute it and/or modify it under the Artistic License 2.0.
 

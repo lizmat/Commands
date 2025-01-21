@@ -17,12 +17,14 @@ my $commands = Commands.new:
   commands => (
     quit  => { last },  # also allows "q", "qu", "qui"
     exit  => "quit",    # handle same as "quit"
-    shout => { say .skip.uc ~ "!" },
     sleep => { sleep .[1] // 1 }
     ""    => { say "assume same" },
     "release all" => { say "all released" },
+    &shout,
   ),
 ;
+
+sub shout($_) { say .skip.uc ~ "!" }
 
 # Run a very simple REPL
 loop {
@@ -36,7 +38,9 @@ DESCRIPTION
 
 The `Commands` role provides a declarative way to handle (user) inputs in REPL-like environments. It allows this by describing the possible command interactions once (possibly at compile time) and the associated actions, and takes away the burden of figuring out all of the possible combinations of commands with possible shortcuts.
 
-The main declarations consist of a list of `Pair`s where the key is the command, and the value is either e `Callable`, or a string referring to an other command (allowing a simple way to define aliases). The action to be performed if the user entered something that did not match any of the commands, can also be specified.
+The main declarations consist of the named argument `"commands"` which is expected to contain a `List` of values. Each value can either be a`Pair` where the key is the command, and the value is either a `Callable`, or a string referring to an other command (allowing a simple way to define aliases). Or can be a subroutine: in which case the name of the subroutine will be taken as the command name.
+
+The action to be performed if the user entered something that did not match any of the commands, can also be specified with `"default"`.
 
 Specifying a command
 --------------------
@@ -75,9 +79,9 @@ my $commands = Commands.new:
 
 ### :commands
 
-Required. The `:commands` named argument expects a list of `Pairs` of which the key determines the command, and the value determines the associated action to be performed. The action to be performed can be an actual `Callable`, or a string indicating the command the given key is an alias to.
+Required. The `:commands` named argument expects a list. Its values should either be a `Pair` of which the key determines the command name, and the value determines the associated action to be performed. The action to be performed can be an actual `Callable`, or a string indicating the command the given key is an alias to. Or it can be a subroutine: in which case the name of the subroutine will be taken as the command name.
 
-If a `Callable` is specified, then it should expect a single positional argument: a `List` of the "tokens" as entered by the user (which defaults to executing the `.words` method on the input string). Not specifying parameters on the `Callable` is generally enough, especially if one is not interested in any additional arguments.
+If a `Callable` is specified, then it should expect a single positional argument: a `List` of the "tokens" as entered by the user (which defaults to executing the `.words` method on the input string). Not specifying parameters on a `Block` is generally enough, especially if one is **not** interested in any additional arguments.
 
 ### :default
 
@@ -112,9 +116,12 @@ add-command
 
 ```raku
 $commands.add-command( "sleep" => { sleep .[1] // 1 } );
+
+sub frobnicate($_) { say "frobnicating: $_" }
+$commands.add-command(&frobnicate);  # add "frobnicate" command
 ```
 
-The `add-command` method allows one to add a command to the existing command structure during the lifetime of the `Commands` object. It expects a `Pair` argument, just as in the `List` specified with the `:commands` named argument at object instantion.
+The `add-command` method allows one to add a command to the existing command structure during the lifetime of the `Commands` object. It expects an argument, just as in the `List` specified with the `:commands` named argument at object instantion.
 
 resolve-command
 ---------------
@@ -311,7 +318,7 @@ If you like this module, or what I'm doing more generally, committing to a [smal
 COPYRIGHT AND LICENSE
 =====================
 
-Copyright 2024 Elizabeth Mattijsen
+Copyright 2024, 2025 Elizabeth Mattijsen
 
 This library is free software; you can redistribute it and/or modify it under the Artistic License 2.0.
 

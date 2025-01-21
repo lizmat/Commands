@@ -14,7 +14,7 @@ my role Commands is export {
     # Put all the commands in the right place
     method TWEAK(:$commands!) {
         for $commands<> {
-            $_ ~~ Pair
+            $_ ~~ Pair:D | Callable:D
               ?? self.add-command($_)
               !! die "Don't know what to do with: $_.raku()";
         }
@@ -26,7 +26,10 @@ my role Commands is export {
     method sys(Commands:D:) { $!sys // $!err // $*ERR }
 
     # Add a single command
-    method add-command(Commands:D: Pair:D $_) {
+    multi method add-command(Commands:D: Callable:D $_) {
+        self.add-command(.name => $_)
+    }
+    multi method add-command(Commands:D: Pair:D $_) {
         my %commands  := %!commands;
         my @primaries := @!primaries;
         my %aliases   := %!aliases;

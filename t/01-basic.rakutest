@@ -18,6 +18,15 @@ my constant %help =
   quit  => "quit the editor",
   shout => "say input in capitals with exclamation mark",
 ;
+sub help($_) {
+    state $help = $*COMMANDS.extended-help-from-hash(%help);
+    if .skip.join(" ") -> $deeper {
+        $help.process($deeper)
+    }
+    else {
+        .say for $*COMMANDS.primaries;
+    }
+}
 
 my $commands = Commands.new:
   default => { note "default: '$*INPUT'" },
@@ -29,16 +38,7 @@ my $commands = Commands.new:
     red           => { say "save" },
     shout         => { say .skip.uc ~ "!" },
     ""            => { say "same" },
-
-    help          => {
-        state $help = $*COMMANDS.extended-help-from-hash(%help);
-        if .skip.join(" ") -> $deeper {
-            $help.process($deeper)
-        }
-        else {
-            .say for $*COMMANDS.primaries;
-        }
-    },
+    &help,
   ),
   commandifier => *.split(";").map(*.trim),
   :$out, :$err, :$sys,

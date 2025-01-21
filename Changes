@@ -1,6 +1,9 @@
 Revision history for Commands
 
 {{$NEXT}}
+    - Allow a subroutine specification as a command: the
+      name of the command will be the subroutine's name
+    - Update copyright year
 
 0.0.5  2024-12-02T21:39:52+01:00
     - Added support for "resolve-command" method
