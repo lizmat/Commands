@@ -1,6 +1,8 @@
 Revision history for Commands
 
 {{$NEXT}}
+
+0.0.6  2025-01-21T20:00:20+01:00
     - Allow a subroutine specification as a command: the
       name of the command will be the subroutine's name
     - Update copyright year
