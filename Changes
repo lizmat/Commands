@@ -2,6 +2,11 @@ Revision history for Commands
 
 {{$NEXT}}
 
+0.0.7  2025-02-21T14:43:59+01:00
+    - Fix issue with adding commands of which the name of
+      one command is the prefix of another, e.g. "edit" vs
+      "editor"
+
 0.0.6  2025-01-21T20:00:20+01:00
     - Allow a subroutine specification as a command: the
       name of the command will be the subroutine's name

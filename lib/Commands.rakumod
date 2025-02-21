@@ -51,7 +51,9 @@ my role Commands is export {
             my int $i;
             my int $chars = $main.chars;
             while ++$i < $chars {
-                %commands.push("$main.substr(0,$i)$rest" => $referrer);
+                my str $name = "$main.substr(0,$i)$rest";
+                %commands.push($name => $referrer)
+                  unless %commands{$name} ~~ Callable;
             }
         }
         else {
