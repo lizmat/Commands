@@ -27,9 +27,9 @@ my role Commands is export {
 
     # Add a single command
     multi method add-command(Commands:D: Callable:D $_) {
-        self.add-command(.name => $_)
+        self.add-command(.name => $_, |%_)
     }
-    multi method add-command(Commands:D: Pair:D $_) {
+    multi method add-command(Commands:D: Pair:D $_, :$no-shortcuts) {
         my %commands  := %!commands;
         my @primaries := @!primaries;
         my %aliases   := %!aliases;
@@ -48,12 +48,15 @@ my role Commands is export {
             }
             %commands{$referrer} := $value;
 
-            my int $i;
-            my int $chars = $main.chars;
-            while ++$i < $chars {
-                my str $name = "$main.substr(0,$i)$rest";
-                %commands.push($name => $referrer)
-                  unless %commands{$name} ~~ Callable;
+            # We want shortcuts
+            unless $no-shortcuts {
+                my int $i;
+                my int $chars = $main.chars;
+                while ++$i < $chars {
+                    my str $name = "$main.substr(0,$i)$rest";
+                    %commands.push($name => $referrer)
+                      unless %commands{$name} ~~ Callable;
+                }
             }
         }
         else {

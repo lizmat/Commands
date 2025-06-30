@@ -119,9 +119,13 @@ $commands.add-command( "sleep" => { sleep .[1] // 1 } );
 
 sub frobnicate($_) { say "frobnicating: $_" }
 $commands.add-command(&frobnicate);  # add "frobnicate" command
+
+$commands.add-command( "bt" => { say "backtrace" }, :no-shortcuts );
 ```
 
 The `add-command` method allows one to add a command to the existing command structure during the lifetime of the `Commands` object. It expects an argument, just as in the `List` specified with the `:commands` named argument at object instantion.
+
+Optionally takes a `:no-shortcuts` boolean named argument: if specified with a true value, will **not** create any shortcuts for the given command name. By default, shortcuts for the command name will be created as long as they don't interfere with other commands.
 
 resolve-command
 ---------------

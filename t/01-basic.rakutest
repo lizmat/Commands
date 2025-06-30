@@ -1,7 +1,7 @@
 use Test;
 use Commands;
 
-plan 36;
+plan 38;
 
 class Catcher {
     has @!seen;
@@ -43,6 +43,7 @@ my $commands = Commands.new:
   commandifier => *.split(";").map(*.trim),
   :$out, :$err, :$sys,
 ;
+$commands.add-command: "bt" => { say "backtrace" }, :no-shortcuts;
 
 sub check(Str:D $input, **@expected) is test-assertion {
 
@@ -62,7 +63,7 @@ sub check(Str:D $input, **@expected) is test-assertion {
 }
 
 is-deeply $commands.primaries,
-  <<exit help quit red release "release all" shout>>,
+  <<bt exit help quit red release "release all" shout>>,
   'check primaries';
 is-deeply $commands.aliases,
   (quit => [<exit>],).Map,
@@ -95,10 +96,12 @@ check "red", ["save"];
 check "shout hello  there", ["HELLO THERE!"];
 check "s     hello  there", ["HELLO THERE!"];
 
+check "bt", ["backtrace"];
+
 #- help ------------------------------------------------------------------------
 
 check "help", [
-  "exit", "help", "quit", "red", "release", "release all", "shout"
+  "bt", "exit", "help", "quit", "red", "release", "release all", "shout"
 ];
 check "help q", [
   "More information about: quit\n%help<quit>"
@@ -118,6 +121,8 @@ check "help foo bar", [
 check Q|  foo  |,          [], ["default: 'foo'"];
 check Q|my $a = 666|,      [], [Q|default: 'my $a = 666'|];
 check Q|my $a = 666 ; $a|, [], [Q|default: 'my $a = 666'|, Q|default: '$a'|];
+
+check Q|b|, [], [Q|default: 'b'|];  # not a shortcut made
 
 #- error handling --------------------------------------------------------------
 
